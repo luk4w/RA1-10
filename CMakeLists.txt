@@ -9,6 +9,7 @@ include_directories(include)
 # Define os arquivos de código-fonte
 set(SOURCES
     src/main.cpp
+    src/cli_controller.cpp
 )
 
 # Define o nome do executável e o(s) arquivo(s) fonte
