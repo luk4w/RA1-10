@@ -127,7 +127,7 @@ int estadoPalavra(const std::string &linha, size_t &pos, std::vector<std::string
     }
 
     if (buffer.length() > 0) {
-        // captura token "RES" e "MEM"
+        // captura token como "RES" e "MEM" ou qualquer palavra que seja composta apenas por letras
         tokens.push_back(buffer);
     }
 

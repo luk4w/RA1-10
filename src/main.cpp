@@ -44,20 +44,22 @@ int main(int argc, char *argv[])
 
     // Extrair os tokens de cada linha individualmente
     vector<string> tokens_linha;
-    for (size_t i = 0; i < buffer_linhas.size(); ++i) {
+    for (size_t i = 0; i < buffer_linhas.size(); ++i)
+    {
         int status = parseExpressao(buffer_linhas[i], tokens_linha);
-        if (status != 0) {
+        if (status != 0)
+        {
             cerr << "Erro lexico encontrado na linha " << i + 1 << endl;
         }
     }
 
-
     return 0;
 }
 
-
-void testarParseExpressao() {
-    struct CasoTeste {
+void testarParseExpressao()
+{
+    struct CasoTeste
+    {
         string entrada;
         int statusEsperado;
         size_t tokensEsperados;
@@ -75,20 +77,23 @@ void testarParseExpressao() {
         // Entradas invalidas
         {"(3.14 2.0 &)", 1, 0, "Caractere invalido '&'"},
         {"3.14.5", 1, 0, "Numero malformado (dois pontos)"},
-        {"3,45", 1, 0, "Numero malformado (virgula)"}
-    };
+        {"3,45", 1, 0, "Numero malformado (virgula)"}};
 
     cout << "\n--- Validacao ---\n";
-    for (const auto& t : testes) {
+    for (const auto &t : testes)
+    {
         vector<string> tokens;
         int status = parseExpressao(t.entrada, tokens);
 
-        if (status == t.statusEsperado) {
+        if (status == t.statusEsperado)
+        {
             cout << "[OK] " << t.descricao << endl;
-        } else {
-            cout << "[NOK] " << t.descricao 
-                      << " Esperado: " << t.statusEsperado 
-                      << ", Obtido: " << status << "\n";
+        }
+        else
+        {
+            cout << "[NOK] " << t.descricao
+                 << " Esperado: " << t.statusEsperado
+                 << ", Obtido: " << status << "\n";
         }
     }
 }
