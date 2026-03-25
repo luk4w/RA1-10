@@ -10,6 +10,8 @@
 
 using namespace std;
 
+void testarParseExpressao();
+
 int main(int argc, char *argv[])
 {
     // Validacao do numero de argumentos
@@ -30,13 +32,13 @@ int main(int argc, char *argv[])
     }
 
     // Alocar memoria dinamica para o buffer de linhas
-    std::vector<std::string> buffer_linhas;
+    vector<string> buffer_linhas;
 
     // Extrair os dados do arquivo e armazenar no buffer
     int status = lerArquivo(arq, buffer_linhas);
     if (status != 0)
     {
-        std::cerr << "Falha ao ler o arquivo " << arq << "\n";
+        cerr << "Falha ao ler o arquivo " << arq << "\n";
         return status;
     }
 
@@ -49,7 +51,44 @@ int main(int argc, char *argv[])
         }
     }
 
-    
 
     return 0;
+}
+
+
+void testarParseExpressao() {
+    struct CasoTeste {
+        string entrada;
+        int statusEsperado;
+        size_t tokensEsperados;
+        string descricao;
+    };
+
+    vector<CasoTeste> testes = {
+        // Entradas validas
+        {"(3.14 2.0 +)", 0, 5, "Soma simples com reais"},
+        {"(5 RES)", 0, 3, "Comando especial RES"},
+        {"(10.5 CONTADOR MEM)", 0, 5, "Comando MEM com identificador"},
+        {"((1 2 +) 3 *)", 0, 9, "Expressao aninhada"},
+        {"(10 3 //)", 0, 5, "Divisao inteira"},
+
+        // Entradas invalidas
+        {"(3.14 2.0 &)", 1, 0, "Caractere invalido '&'"},
+        {"3.14.5", 1, 0, "Numero malformado (dois pontos)"},
+        {"3,45", 1, 0, "Numero malformado (virgula)"}
+    };
+
+    cout << "\n--- Validacao ---\n";
+    for (const auto& t : testes) {
+        vector<string> tokens;
+        int status = parseExpressao(t.entrada, tokens);
+
+        if (status == t.statusEsperado) {
+            cout << "[OK] " << t.descricao << endl;
+        } else {
+            cout << "[NOK] " << t.descricao 
+                      << " Esperado: " << t.statusEsperado 
+                      << ", Obtido: " << status << "\n";
+        }
+    }
 }
