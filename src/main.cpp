@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "cli_controller.hpp"
+#include "fsm_scanner.hpp"
 
 using namespace std;
 
@@ -38,6 +39,17 @@ int main(int argc, char *argv[])
         std::cerr << "Falha ao ler o arquivo " << arq << "\n";
         return status;
     }
+
+    // Extrair os tokens de cada linha individualmente
+    vector<string> tokens_linha;
+    for (size_t i = 0; i < buffer_linhas.size(); ++i) {
+        int status = parseExpressao(buffer_linhas[i], tokens_linha);
+        if (status != 0) {
+            cerr << "Erro lexico encontrado na linha " << i + 1 << endl;
+        }
+    }
+
+    
 
     return 0;
 }

@@ -10,6 +10,7 @@ include_directories(include)
 set(SOURCES
     src/main.cpp
     src/cli_controller.cpp
+    src/fsm_scanner.cpp
 )
 
 # Define o nome do executável e o(s) arquivo(s) fonte
