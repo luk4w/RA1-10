@@ -11,6 +11,7 @@ set(SOURCES
     src/main.cpp
     src/cli_controller.cpp
     src/fsm_scanner.cpp
+    src/rpn_evaluator.cpp
 )
 
 # Define o nome do executável e o(s) arquivo(s) fonte
