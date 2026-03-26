@@ -48,7 +48,7 @@ int estadoInicial(const std::string &linha, size_t &pos, std::vector<std::string
     {
         return estadoOperador(linha, pos, tokens);
     }
-    else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+    else if ((c >= 'A' && c <= 'Z')) // Aceitar apenas letras maiusculas
     {
         return estadoPalavra(linha, pos, tokens);
     }
