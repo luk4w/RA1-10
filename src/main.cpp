@@ -76,8 +76,8 @@ void testarParseExpressao()
         // Entradas validas
         {"(3.14 2.0 +)", 0, 5, "Soma simples com reais"},
         {"(5 RES)", 0, 3, "Comando RES"},
-        {"(10.5 CONTADOR)", 0, 5, "Comando MEM com identificador"},
-        {"((CONTADOR) 2.0 *)", 0, 5, "Comando LOAD com identificador"},
+        {"(10.5 CONTADOR)", 0, 5, "Comando STORE com identificador valido"},
+        {"((CONTADOR) 2.0 *)", 0, 5, "Comando LOAD com identificador valido"},
         {"((1 2 +) 3 *)", 0, 9, "Expressao aninhada"},
         {"(10 3 //)", 0, 5, "Divisao inteira"},
 
@@ -85,8 +85,8 @@ void testarParseExpressao()
         {"(3.14 2.0 &)", 1, 0, "Caractere invalido '&'"},
         {"3.14.5", 1, 0, "Numero malformado (dois pontos)"},
         {"3,45", 1, 0, "Numero malformado (virgula)"},
-        {"(10.5 MEM)", 1, 0, "Comando MEM sem identificador"},
-        {"(10.5 123ABC +)", 1, 0, "Identificador invalido (com numeros)"},
+        {"(10.5 BRASIL1)", 1, 0, "Comando STORE com identificador invalido (com numero colado no final)"},
+        {"(10.5 123ABC +)", 1, 0, "Identificador STORE com identificador invalido (numeros colados no inicio)"},
         {"(10.5 ABC# +)", 1, 0, "Identificador invalido (caractere especial)"},
         {"(10.5 ABC DEF +)", 1, 0, "Identificador invalido (mais de um token)"},
         {"(10.5 ABC+)", 1, 0, "Identificador invalido (sem espaco)"}};
@@ -140,9 +140,8 @@ void testarExecutarExpressao()
     executarExpressao(tokens4, historico, memoria);
     std::cout << "Teste 3 (1 RES): " << (historico.back() == 12.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
 
-    // Teste 4: Erro Lexico
-    std::vector<std::string> tokens5;
-    parseExpressao("(100.0 BRASIL123)", tokens5);
+    // Teste 4: Erro Lexico - forçado token invalido
+    std::vector<std::string> tokens5 = {"10.0", "X+", "+"};
     std::cout << "Teste 4 (Identificador Invalido): ";
     if (executarExpressao(tokens5, historico, memoria) != 0)
     {
