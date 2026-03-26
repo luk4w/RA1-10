@@ -141,10 +141,11 @@ int executarExpressao(const std::vector<std::string> &tokens, std::vector<double
             {
                 // a string tem letras, nao e numero -> e uma variavel
                 // (BRASIL
+                // se o token anterior for '(' 
                 if (i > 0 && tokens[i - 1] == "(")
                 {
+                    // e o atual começar com letra maiscula
                     // LOAD
-                    // se o token anterior for '(' e o atual começar com letra maiscula
                     if (isIdentificadorValido(token))
                     {
                         // Se X existir, empilha o valor de X
@@ -161,15 +162,24 @@ int executarExpressao(const std::vector<std::string> &tokens, std::vector<double
                 else // BRASIL)
                 {
                     // STORE
-                    if (pilha.size() > 0)
+                    // Se não tiver o '(' na frente e for tudo maiuscula
+                    if (isIdentificadorValido(token))
                     {
-                        double val = pilha.top();
-                        pilha.pop();
-                        memoria[token] = val;
+                        if (pilha.size() > 0)
+                        {
+                            double val = pilha.top();
+                            pilha.pop();
+                            memoria[token] = val;
+                        }
+                        else
+                        {
+                            std::cerr << "Erro: Stack underflow ao gravar em " << token << "\n";
+                            return 1;
+                        }
                     }
                     else
                     {
-                        std::cerr << "Erro ao gravar na memoria\n";
+                        std::cerr << "Erro lexico: Identificador invalido no STORE '" << token << "'\n";
                         return 1;
                     }
                 }
