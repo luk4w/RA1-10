@@ -13,7 +13,7 @@ using namespace std;
 
 // Prototipos de funcao
 void testarParseExpressao();
-void testarExecutarExpressao();
+void exibirResultados();
 
 int main(int argc, char *argv[])
 {
@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    testarParseExpressao();
-    testarExecutarExpressao();
+    // testarParseExpressao();
+    exibirResultados();
 
     return 0;
 }
@@ -110,7 +110,7 @@ void testarParseExpressao()
     }
 }
 
-void testarExecutarExpressao()
+void exibirResultados()
 {
     cout << "\n--- Validacao executarExpressao ---\n";
 
