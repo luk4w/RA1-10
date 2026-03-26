@@ -155,7 +155,7 @@ int executarExpressao(const std::vector<std::string> &tokens, std::vector<double
                     else
                     {
                         //(BRASIL123) (brasil) ou qualquer outra coisa que nao tiver apenas letras maiuscula
-                        std::cerr << "Erro lexico: Identificador invalido '" << token << "'\n";
+                        std::cerr << "Erro lexico: Identificador invalido ou reservado no LOAD '" << token << "'\n";
                         return 1;
                     }
                 }
@@ -179,7 +179,7 @@ int executarExpressao(const std::vector<std::string> &tokens, std::vector<double
                     }
                     else
                     {
-                        std::cerr << "Erro lexico: Identificador invalido no STORE '" << token << "'\n";
+                        std::cerr << "Erro lexico: Identificador invalido ou reservado no STORE '" << token << "'\n";
                         return 1;
                     }
                 }
@@ -199,7 +199,8 @@ int executarExpressao(const std::vector<std::string> &tokens, std::vector<double
 // Verifica se a variavel e valida (todas letras maiusculas)
 bool isIdentificadorValido(const std::string &token)
 {
-    if (token.empty())
+    // Valida se o token e reservado
+    if (token.empty() || token == "RES")
         return false;
 
     // Varre a string caractere por caractere (Tabela ASCII)
