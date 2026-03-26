@@ -131,9 +131,9 @@ void testarExecutarExpressao()
     
     // Teste 3: Historico (RES)
     std::vector<std::string> tokens4;
-    parseExpressao("(2 RES)", tokens4);
+    parseExpressao("(1 RES)", tokens4);
     executarExpressao(tokens4, historico, memoria);
-    std::cout << "Teste 3 (2 RES): " << (historico.back() == 12.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
+    std::cout << "Teste 3 (1 RES): " << (historico.back() == 12.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
 
     // Teste 4: Erro Lexico
     std::vector<std::string> tokens5;
