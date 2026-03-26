@@ -8,7 +8,7 @@ int estadoOperador(const std::string &linha, size_t &pos, std::vector<std::strin
 int estadoPalavra(const std::string &linha, size_t &pos, std::vector<std::string> &tokens);
 int estadoParenteses(const std::string &linha, size_t &pos, std::vector<std::string> &tokens);
 int estadoVazio(const std::string &linha, size_t &pos, std::vector<std::string> &tokens);
-bool isTokenIdentificador(const std::string& str);
+bool isTokenIdentificador(const std::string &str);
 
 int parseExpressao(std::string linha, std::vector<std::string> &tokens)
 {
@@ -19,7 +19,8 @@ int parseExpressao(std::string linha, std::vector<std::string> &tokens)
     {
         int status = estadoInicial(linha, pos, tokens);
         // Retorna se ocorrer um erro durante o processamento
-        if (status != 0) return status;
+        if (status != 0)
+            return status;
     }
     return 0;
 }
@@ -90,9 +91,16 @@ int estadoNumero(const std::string &linha, size_t &pos, std::vector<std::string>
             buffer += c;
             pos++;
         }
+        // Abrange mais casos de fim de token nos arquivos de teste, txt 
+        else if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == ')')
+        {
+            break;
+        }
         else
         {
-            break; // Quebra se nao for numero ou ponto decimal
+            // letra com operador ou numero com letra -> 123ABC ou 123+
+            std::cerr << "Lixo ou letra apos numero '" << c << "' na posicao " << pos << "\n";
+            return 1;
         }
     }
 
@@ -173,7 +181,9 @@ int estadoParenteses(const std::string &linha, size_t &pos, std::vector<std::str
     return 0;
 }
 
-bool isTokenIdentificador(const std::string& str) {
-    if (str.empty()) return false;
-    return (str[0] >= 'A' && str[0] <= 'Z'); 
+bool isTokenIdentificador(const std::string &str)
+{
+    if (str.empty())
+        return false;
+    return (str[0] >= 'A' && str[0] <= 'Z');
 }
