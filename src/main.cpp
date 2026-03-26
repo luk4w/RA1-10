@@ -7,10 +7,13 @@
 
 #include "cli_controller.hpp"
 #include "fsm_scanner.hpp"
+#include "rpn_evaluator.hpp"
 
 using namespace std;
 
+// Prototipos de funcao
 void testarParseExpressao();
+void testarExecutarExpressao();
 
 int main(int argc, char *argv[])
 {
@@ -53,6 +56,9 @@ int main(int argc, char *argv[])
         }
     }
 
+    testarParseExpressao();
+    testarExecutarExpressao();
+
     return 0;
 }
 
@@ -69,8 +75,9 @@ void testarParseExpressao()
     vector<CasoTeste> testes = {
         // Entradas validas
         {"(3.14 2.0 +)", 0, 5, "Soma simples com reais"},
-        {"(5 RES)", 0, 3, "Comando especial RES"},
-        {"(10.5 CONTADOR MEM)", 0, 5, "Comando MEM com identificador"},
+        {"(5 RES)", 0, 3, "Comando RES"},
+        {"(10.5 CONTADOR)", 0, 5, "Comando MEM com identificador"},
+        {"((CONTADOR) 2.0 *)", 0, 5, "Comando LOAD com identificador"},
         {"((1 2 +) 3 *)", 0, 9, "Expressao aninhada"},
         {"(10 3 //)", 0, 5, "Divisao inteira"},
 
@@ -79,7 +86,7 @@ void testarParseExpressao()
         {"3.14.5", 1, 0, "Numero malformado (dois pontos)"},
         {"3,45", 1, 0, "Numero malformado (virgula)"}};
 
-    cout << "\n--- Validacao ---\n";
+    cout << "\n--- Validacao parseExpressao ---\n";
     for (const auto &t : testes)
     {
         vector<string> tokens;
@@ -95,5 +102,49 @@ void testarParseExpressao()
                  << " Esperado: " << t.statusEsperado
                  << ", Obtido: " << status << "\n";
         }
+    }
+}
+
+void testarExecutarExpressao()
+{
+    cout << "\n--- Validacao executarExpressao ---\n";
+
+    std::vector<double> historico;
+    std::map<std::string, double> memoria;
+
+    // Teste 1: Conta Simples
+    std::vector<std::string> tokens1;
+    parseExpressao("(10.0 2.0 +)", tokens1);
+    executarExpressao(tokens1, historico, memoria);
+    std::cout << "Teste 1 (10 2 +): " << (historico.back() == 12.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
+
+    // Teste 2: Memoria (Store e Load)
+    std::vector<std::string> tokens2;
+    parseExpressao("(42.0 X)", tokens2);
+    executarExpressao(tokens2, historico, memoria);
+    std::cout << "Teste 2a (42 X): " << (memoria["X"] == 42.0 ? "[OK]" : "[NOK]") << " -> " << memoria["X"] << "\n";
+
+    std::vector<std::string> tokens3;
+    parseExpressao("((X) 2.0 /)", tokens3);
+    executarExpressao(tokens3, historico, memoria);
+    std::cout << "Teste 2b ((X) 2 /): " << (historico.back() == 21.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
+    
+    // Teste 3: Historico (RES)
+    std::vector<std::string> tokens4;
+    parseExpressao("(2 RES)", tokens4);
+    executarExpressao(tokens4, historico, memoria);
+    std::cout << "Teste 3 (2 RES): " << (historico.back() == 12.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
+
+    // Teste 4: Erro Lexico
+    std::vector<std::string> tokens5;
+    parseExpressao("(100.0 BRASIL123)", tokens5);
+    std::cout << "Teste 4 (Identificador Invalido): ";
+    if (executarExpressao(tokens5, historico, memoria) != 0)
+    {
+        std::cout << "[OK]\n";
+    }
+    else
+    {
+        std::cout << "[NOK]\n";
     }
 }
