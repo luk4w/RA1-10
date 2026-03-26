@@ -84,7 +84,12 @@ void testarParseExpressao()
         // Entradas invalidas
         {"(3.14 2.0 &)", 1, 0, "Caractere invalido '&'"},
         {"3.14.5", 1, 0, "Numero malformado (dois pontos)"},
-        {"3,45", 1, 0, "Numero malformado (virgula)"}};
+        {"3,45", 1, 0, "Numero malformado (virgula)"},
+        {"(10.5 MEM)", 1, 0, "Comando MEM sem identificador"},
+        {"(10.5 123ABC +)", 1, 0, "Identificador invalido (com numeros)"},
+        {"(10.5 ABC# +)", 1, 0, "Identificador invalido (caractere especial)"},
+        {"(10.5 ABC DEF +)", 1, 0, "Identificador invalido (mais de um token)"},
+        {"(10.5 ABC+)", 1, 0, "Identificador invalido (sem espaco)"}};
 
     cout << "\n--- Validacao parseExpressao ---\n";
     for (const auto &t : testes)
