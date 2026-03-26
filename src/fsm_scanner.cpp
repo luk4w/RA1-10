@@ -8,6 +8,7 @@ int estadoOperador(const std::string &linha, size_t &pos, std::vector<std::strin
 int estadoPalavra(const std::string &linha, size_t &pos, std::vector<std::string> &tokens);
 int estadoParenteses(const std::string &linha, size_t &pos, std::vector<std::string> &tokens);
 int estadoVazio(const std::string &linha, size_t &pos, std::vector<std::string> &tokens);
+bool isTokenIdentificador(const std::string& str);
 
 int parseExpressao(std::string linha, std::vector<std::string> &tokens)
 {
@@ -67,29 +68,34 @@ int estadoNumero(const std::string &linha, size_t &pos, std::vector<std::string>
 {
     std::string buffer = "";
     bool flag_ponto_decimal = false;
-    
-    while (pos < linha.length()) {
+
+    while (pos < linha.length())
+    {
         char c = linha[pos];
-        
+
         // Verificar se o caractere é um dígito ou um ponto decimal
-        if (c >= '0' && c <= '9') {
+        if (c >= '0' && c <= '9')
+        {
             buffer += c;
             pos++;
-        } 
-        else if (c == '.') {
-            if (flag_ponto_decimal) {
+        }
+        else if (c == '.')
+        {
+            if (flag_ponto_decimal)
+            {
                 std::cerr << "Numero malformado em: " << buffer << c << "\n";
                 return 1;
             }
             flag_ponto_decimal = true;
             buffer += c;
             pos++;
-        } 
-        else {
+        }
+        else
+        {
             break; // Quebra se nao for numero ou ponto decimal
         }
     }
-    
+
     tokens.push_back(buffer);
     return 0;
 }
@@ -102,7 +108,8 @@ int estadoOperador(const std::string &linha, size_t &pos, std::vector<std::strin
     pos++;
 
     // Tratar divisao inteira
-    if (c == '/' && pos < linha.length() && linha[pos] == '/') {
+    if (c == '/' && pos < linha.length() && linha[pos] == '/')
+    {
         op += linha[pos];
         pos++;
     }
@@ -113,21 +120,44 @@ int estadoOperador(const std::string &linha, size_t &pos, std::vector<std::strin
 int estadoPalavra(const std::string &linha, size_t &pos, std::vector<std::string> &tokens)
 {
     std::string buffer = "";
-    
+
     // Ler o caracter enquanto não terminar a linha
-    while (pos < linha.length()) {
+    while (pos < linha.length())
+    {
         char c = linha[pos];
-        // Enquanto o caractere for uma letra, continua lendo a linha
-        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+        // Enquanto o caractere for uma letra maiúscula, adiciona ao buffer
+        if (c >= 'A' && c <= 'Z')
+        {
             buffer += c;
             pos++;
-        } else {
-            break; // Quebra se não for letra
+        }
+        // espaço, tabulação, nova linha ou parentese, considera o fim do token
+        else if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == ')')
+        {
+            break;
+        }
+        else
+        {
+            std::cerr << "Token invalido '" << c << "' na posicao " << pos << "\n";
+            return 1;
         }
     }
 
-    if (buffer.length() > 0) {
-        // captura token como "RES" e "MEM" ou qualquer palavra que seja composta apenas por letras
+    // Valida identificadores consecutivos
+    if (!tokens.empty() && tokens.back() != "(" && tokens.back() != "RES")
+    {
+        // Verifica se o token anterior é um identificador
+        if (isTokenIdentificador(tokens.back()))
+        {
+            // Se for um identificador, exibe o erro de identificadores consecutivos
+            std::cerr << "Identificadores consecutivos " << tokens.back() << " e " << buffer << " na posicao " << pos - buffer.length() << "\n";
+            return 1;
+        }
+    }
+
+    // Adicionar o token no vetor se o buffer nao estiver vazio
+    if (buffer.length() > 0)
+    {
         tokens.push_back(buffer);
     }
 
@@ -141,4 +171,9 @@ int estadoParenteses(const std::string &linha, size_t &pos, std::vector<std::str
     tokens.push_back(p);
     pos++;
     return 0;
+}
+
+bool isTokenIdentificador(const std::string& str) {
+    if (str.empty()) return false;
+    return (str[0] >= 'A' && str[0] <= 'Z'); 
 }
