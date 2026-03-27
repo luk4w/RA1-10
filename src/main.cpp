@@ -56,12 +56,13 @@ int main(int argc, char *argv[])
         }
     }
 
-    // testarParseExpressao();
+    testarParseExpressao();
     exibirResultados();
 
     return 0;
 }
 
+// validar parseExpressao em casos validos e invalidos
 void testarParseExpressao()
 {
     struct CasoTeste
@@ -74,22 +75,22 @@ void testarParseExpressao()
 
     vector<CasoTeste> testes = {
         // Entradas validas
-        {"(3.14 2.0 +)", 0, 5, "Soma simples com reais"},
-        {"(5 RES)", 0, 3, "Comando RES"},
-        {"(10.5 CONTADOR)", 0, 5, "Comando STORE com identificador valido"},
-        {"((CONTADOR) 2.0 *)", 0, 5, "Comando LOAD com identificador valido"},
-        {"((1 2 +) 3 *)", 0, 9, "Expressao aninhada"},
-        {"(10 3 //)", 0, 5, "Divisao inteira"},
+        {"(3.14 2.0 +)", 0, 5, "['(', '3.14', '2.0', '+', ')']"},
+        {"(5 RES)", 0, 4, "['(', '5', 'RES', ')']"},
+        {"(10.5 CONTADOR)", 0, 4, "['(', '10.5', 'CONTADOR', ')']"},
+        {"((CONTADOR) 2.0 *)", 0, 7, "['(', '(', 'CONTADOR', ')', '2.0', '*', ')']"},
+        {"((1 2 +) 3 *)", 0, 9, "['(', '(', '1', '2', '+', ')', '3', '*', ')']"},
+        {"(10 3 //)", 0, 5, "['(', '10', '3', '//', ')']"},
 
         // Entradas invalidas
-        {"(3.14 2.0 &)", 1, 0, "Caractere invalido '&'"},
-        {"3.14.5", 1, 0, "Numero malformado (dois pontos)"},
-        {"3,45", 1, 0, "Numero malformado (virgula)"},
-        {"(10.5 BRASIL1)", 1, 0, "Comando STORE com identificador invalido (com numero colado no final)"},
-        {"(10.5 123ABC +)", 1, 0, "Identificador STORE com identificador invalido (numeros colados no inicio)"},
-        {"(10.5 ABC# +)", 1, 0, "Identificador invalido (caractere especial)"},
-        {"(10.5 ABC DEF +)", 1, 0, "Identificador invalido (mais de um token)"},
-        {"(10.5 ABC+)", 1, 0, "Identificador invalido (sem espaco)"}};
+        {"(3.14 2.0 &)", 1, 0, "Erro lexico: Caractere nao reconhecido '&'"},
+        {"3.14.5", 1, 0, "Erro lexico: Multiplos pontos flutuantes no literal"},
+        {"3,45", 1, 0, "Erro lexico: Uso de virgula no lugar de ponto"},
+        {"(10.5 BRASIL1)", 1, 0, "Erro lexico: Identificador alfanumerico invalido (numero no sufixo)"},
+        {"(10.5 123ABC +)", 1, 0, "Erro lexico: Identificador alfanumerico invalido (numero no prefixo)"},
+        {"(10.5 ABC# +)", 1, 0, "Erro lexico: Identificador com caractere especial '#'"},
+        {"(10.5 ABC DEF +)", 1, 0, "Erro sintatico/lexico: Multiplos identificadores consecutivos"},
+        {"(10.5 ABC+)", 1, 0, "Erro lexico: Ausencia de delimitador de espaco entre tokens"}};
 
     cout << "\n--- Validacao parseExpressao ---\n";
     for (const auto &t : testes)
@@ -99,17 +100,18 @@ void testarParseExpressao()
 
         if (status == t.statusEsperado)
         {
-            cout << "[OK] " << t.descricao << endl;
+            cout << "[OK] " << t.entrada << " --> " << t.descricao << endl << endl;
         }
         else
         {
-            cout << "[NOK] " << t.descricao
+            cout << "[NOK] " << t.entrada << " --> " << t.descricao
                  << " Esperado: " << t.statusEsperado
                  << ", Obtido: " << status << "\n";
         }
     }
 }
 
+// validar executarExpressao no historico e memeoria
 void exibirResultados()
 {
     cout << "\n--- Validacao executarExpressao ---\n";
@@ -133,7 +135,7 @@ void exibirResultados()
     parseExpressao("((X) 2.0 /)", tokens3);
     executarExpressao(tokens3, historico, memoria);
     std::cout << "Teste 2b ((X) 2 /): " << (historico.back() == 21.0 ? "[OK]" : "[NOK]") << " -> " << historico.back() << "\n";
-    
+
     // Teste 3: Historico (RES)
     std::vector<std::string> tokens4;
     parseExpressao("(1 RES)", tokens4);
@@ -142,7 +144,7 @@ void exibirResultados()
 
     // Teste 4: Erro Lexico - forçado token invalido
     std::vector<std::string> tokens5 = {"10.0", "X+", "+"};
-    std::cout << "Teste 4 (Identificador Invalido): ";
+    std::cout << "Teste 4 (Forcar identificador Invalido): ";
     if (executarExpressao(tokens5, historico, memoria) != 0)
     {
         std::cout << "[OK]\n";

@@ -20,13 +20,11 @@ As instruções do professor determinam que o programa deve:
 >
 > — <cite>Prof. Frank de Alcantara</cite>
 
----
-
-### Instruções de Compilação e Execução
+## 1. Instruções de Compilação e Execução
 
 A infraestrutura de *build* deste projeto é orquestrada pelo **CMake**, e garante uma compilação modular e reprodutível. Como o desenvolvimento tem como alvo principal o ambiente Windows, as instruções abaixo utilizam a *toolchain* do **MSVC** (Microsoft Visual C++) integrada ao **Visual Studio Code**.
 
-### Pré-requisitos do Ambiente
+#### Pré-requisitos do Ambiente
 Certifique-se de ter os seguintes componentes instalados:
 * **Compilador:** Ferramentas de Build do Visual Studio Community 2022 (ou superior) com suporte para desenvolvimento em C++.
 * **Editor:** Visual Studio Code.
@@ -34,7 +32,7 @@ Certifique-se de ter os seguintes componentes instalados:
   * `C/C++` (Microsoft)
   * `CMake Tools` (Microsoft)
 
-### Metodo 1: Compilação via Visual Studio Code
+#### Metodo 1: Compilação via Visual Studio Code
 A extensão [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) automatiza o os comandos de configuração e construção, simplificando o processo. Siga os passos abaixo:
 
 1. Abra a pasta raiz do projeto no Visual Studio Code (`File > Open Folder...`).
@@ -43,9 +41,67 @@ A extensão [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms
 4. Utilize o atalho `Ctrl+Shift+p` para abrir a paleta de comandos, e execute `CMake: Build` para iniciar a compilação do projeto.
 5. Se não houver erros, o executável final (`asmnator.exe`) será alocado dentro do diretório `build/Debug/` (ou `build/Release/`), dependendo da configuração selecionada.
 
-### Metodo 2: Compilação via Terminal
+#### Metodo 2: Compilação via Terminal
 Para compilar diretamente pelo Prompt de Comando, será necessário instalar o [CMake](https://cmake.org/download/) no sistema e garantir que ele esteja disponível no PATH. 
 ```shell
 cmake -B build
 cmake --build build --config Release
 ```
+
+## 2. Testes Unitários
+
+Os testes unitários foram realizados dentro da `main.cpp`, onde foram criadas funções como `testarParseExpressao()` e `exibirResultados()`, que validam o comportamento do programa.
+
+#### void testarParseExpressao()
+```
+--- Validacao parseExpressao ---
+[OK] (3.14 2.0 +) --> ['(', '3.14', '2.0', '+', ')']
+
+[OK] (5 RES) --> ['(', '5', 'RES', ')']
+
+[OK] (10.5 CONTADOR) --> ['(', '10.5', 'CONTADOR', ')']
+
+[OK] ((CONTADOR) 2.0 *) --> ['(', '(', 'CONTADOR', ')', '2.0', '*', ')']
+
+[OK] ((1 2 +) 3 *) --> ['(', '(', '1', '2', '+', ')', '3', '*', ')']
+
+[OK] (10 3 //) --> ['(', '10', '3', '//', ')']
+
+Token invalido '&' na posicao 10
+[OK] (3.14 2.0 &) --> Erro lexico: Caractere nao reconhecido '&'
+
+Numero malformado em: 3.14.
+[OK] 3.14.5 --> Erro lexico: Multiplos pontos flutuantes no literal
+
+Lixo ou letra apos numero ',' na posicao 1
+[OK] 3,45 --> Erro lexico: Uso de virgula no lugar de ponto
+
+Token invalido '1' na posicao 12
+[OK] (10.5 BRASIL1) --> Erro lexico: Identificador alfanumerico invalido (numero no sufixo)
+
+Lixo ou letra apos numero 'A' na posicao 9
+[OK] (10.5 123ABC +) --> Erro lexico: Identificador alfanumerico invalido (numero no prefixo)
+
+Token invalido '#' na posicao 9
+[OK] (10.5 ABC# +) --> Erro lexico: Identificador com caractere especial '#'
+
+Identificadores consecutivos ABC e DEF na posicao 10
+[OK] (10.5 ABC DEF +) --> Erro sintatico/lexico: Multiplos identificadores consecutivos
+
+Token invalido '+' na posicao 9
+[OK] (10.5 ABC+) --> Erro lexico: Ausencia de delimitador de espaco entre tokens
+```
+> Os testes validaram a capacidade do analisador lexico em reconhecer corretamente os tokens, e identificar os erros comuns.
+
+#### void exibirResultados()
+```
+--- Validacao executarExpressao ---
+Teste 1 (10 2 +): [OK] -> 12
+Teste 2a (42 X): [OK] -> 42
+Teste 2b ((X) 2 /): [OK] -> 21
+Teste 3 (1 RES): [OK] -> 12
+Teste 4 (Forcar identificador Invalido): Erro lexico: Identificador invalido ou reservado no STORE 'X+'
+[OK]
+```
+> Os testes validaram que e possivel realizar o processamento das expressoes com base nos tokens reconhecidos
+
