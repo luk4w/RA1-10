@@ -127,6 +127,7 @@ O resultado final do programa pode ser visto em formato de bits bruto (IEEE754) 
 **A. Variáveis (V MEM e MEM)**
 - **V MEM (Salvar):** `42.5 VARX`, o programa grava o valor 42.5 na variavel `VARX`
 - **MEM (Ler):** `(VARX)`, le o valor da variavel `VARX` e o empilha para ser usado em operações futuras.
+
 **B. Histórico (N RES)**
 O comando `RES` serve para reutilizar resultados de linhas que já passaram sem precisar criar variáveis.
 - **Pilha de Histórico:** o asmnator possui uma limitação de memoria de 1000 resultados.
