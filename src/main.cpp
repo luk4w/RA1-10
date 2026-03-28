@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "cli_controller.hpp"
 #include "fsm_scanner.hpp"
@@ -60,8 +61,25 @@ int main(int argc, char *argv[])
     // testarParseExpressao();
     // exibirResultados();
     string output;
-    gerarAssembly(tokens_linha, output);
-    cout << "Assembly:\n" << output;
+    if (gerarAssembly(tokens_linha, output))
+    {
+        cerr << "Erro ao gerar codigo assembly\n";
+        return 1;
+    }
+
+    // Gerar arquivo de saida .txt com o codigo assembly
+    string nomeSaida = arq.substr(0, arq.length() - 4) + "_output.txt";
+    ofstream outFile(nomeSaida);
+
+    if (!outFile.is_open())
+    {
+        cerr << "nao foi possivel criar o arquivo " << nomeSaida << "\n";
+        return 1;
+    }
+    outFile << output; // manda o buffer da ram pro disco rigido
+    outFile.close();
+
+    cout << "Codigo assembly gerado com sucesso em " << nomeSaida << "\n";
 
     return 0;
 }
@@ -104,7 +122,8 @@ void testarParseExpressao()
 
         if (status == t.statusEsperado)
         {
-            cout << "[OK] " << t.entrada << " --> " << t.descricao << endl << endl;
+            cout << "[OK] " << t.entrada << " --> " << t.descricao << endl
+                 << endl;
         }
         else
         {
