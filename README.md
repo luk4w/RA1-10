@@ -124,3 +124,36 @@ O resultado final do programa pode ser visto em formato de bits bruto (IEEE754) 
 
 > Não é recomendado pressionar os dois ao mesmo tempo, mas se você insitir, talvez mostre a ultima sobreposição, que é a parte a\lta
 
+## 4. Resultados
+
+Para assegurar a conformidade com a norma IEEE 754 de 64 bits (Double Precision) exigida pelo edital, todos os resultados obtidos nos 32 LEDs do simulador foram submetidos a um processo de verificação cruzada.
+
+#### Metodologia de Verificação
+
+- **Calculo Analíitico:** Resolução manual da pilha RPN para determinar o valor decimal esperado de cada expressão.
+
+- **Extração de Bits:** Captura dos estados logicos dos LEDs (Palavra Alta e Palavra Baixa) a partir da injeção de javascript no DOM do CPULator e montagem manual das duas partes das palavras e validados/comparados com a ferramenta online [BinaryConvert (Double Precision)](https://www.binaryconvert.com/result_double.html).
+
+```javascript
+(function() {
+    const leds = document.querySelectorAll('#devff200000 .dev_led_led');
+    let binary = Array.from(leds)
+        .map(led => led.classList.contains('dev_led_on') ? '1' : '0')
+        .join('');
+    let hex = parseInt(binary, 2).toString(16).toUpperCase().padStart(8, '0');
+    console.log("%c ASMNATOR - Bit Sniffer ", "background: #222; color: #bada55; pading: 2px;");
+    console.log("Binário (31-0): " + binary);
+    console.log("Hexadecimal: 0x" + hex);
+})();
+```
+
+#### Tabela de Resultados
+
+A tabela abaixo mostra as expressões finais de cada arquivo de teste com os estados capturados nos 32 LEDs de saida.
+
+| Arquivo | Expressão Final | Resultado Esperado | R3 | R2 | Binário
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **teste1.txt** | `((10 10 *) 2.0 /)` | **50.0** | `0x40490000` | `0x00000000` | 0100000001001001000000000000000000000000000000000000000000000000 |
+| **teste2.txt** | `((((10 2 *) 5 /) 2.0 ^) 3 %)` | **1.0** | `0x3FF00000` | `0x00000000` | 0011111111110000000000000000000000000000000000000000000000000000|
+| **teste3.txt** | `(((PROVA) (KILOBYTE) +) 0.0 RES -)` | **-341969.0** | `0xC114DF44` | `0x00000000` | 1100000100010100110111110100010000000000000000000000000000000000 |
+
