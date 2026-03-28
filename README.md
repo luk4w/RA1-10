@@ -8,7 +8,8 @@ RA1 10
 
 O **ASMNATOR** é a primeira fase do projeto da disciplina de `Linguagens Formais e Compiladores` ministrada pelo professor `Frank de Alcantara` na `Pontifícia Universidade Católica do Paraná`. Essa fase visa a construção de um `Analisador Léxico e Gerador de Assembly para ARMv7 (v16.1)`, que será simulado no [Cpulator](https://cpulator.01xz.net/?sys=arm-de1soc).
 
-De modo geral, o programa vai processar algumas instruções em notação polonesa reversa (RPN) escritas em arquivos de texto: `teste1.txt`,`teste2.txt`,`teste3.txt`; e converter elas para código assembly, a partir de uma máquinas de estado finito (FSMs).
+De modo geral, o programa vai processar algumas instruções em notação polonesa reversa (RPN) escritas em arquivos de texto: `teste1.txt`,`teste2.txt`,`teste3.txt`; e converter elas para código assembly, a partir de uma máquinas de estado finito (FSMs) implementadas em C++ sem o uso de bibliotecas de expressões regulares. 
+O pipeline traduz as operações léxicas diretamente para opcodes da Unidade de Ponto Flutuante (VFP) do ARMv7, que garante que toda a carga computacional matematica seja resolvida exclusivamente em hardware durante o tempo de execução ou "runtime".
 
 As instruções do professor determinam que o programa deve:
 
@@ -104,4 +105,22 @@ Teste 4 (Forcar identificador Invalido): Erro lexico: Identificador invalido ou 
 [OK]
 ```
 > Os testes validaram que e possivel realizar o processamento das expressoes com base nos tokens reconhecidos
+
+## 3. Como usar o programa
+
+Para usar o asmnator basta executar o arquivo `asmnator.exe` com parâmetro do `arquivo_generico` de texto com o codigo de notação polonesa reversa (RPN) Ex: `teste1.txt`, `teste2.txt`, `teste3.txt`. 
+```
+.\asmnator.exe teste1.txt
+```
+Apos executar o programa, ele ira gerar o assembly no `{arquivo_generico}_output.txt`, que, então, pode ser carregado no Cpulator-ARMv7 DEC1-SOC(v16.1), compilado e executado.
+
+O resultado final do programa pode ser visto em formato de bits bruto (IEEE754) nos 32 leds da interface.
+
+> Apesar do display possuir apenas 32 leds (quando clicado na opção de exibir eles), as contas foram feitas com 64 bits, ou seja, para representar nos leds da interface foi necessário adaptar.
+> Ou seja, o resultado da expressao foi divido em 2 registradores de 32 bits, apenas foi movido a parte baixa e alta para registradores diferentes: R2 e R3, respectivamente.
+
+- `push button 0` key0 da interface liga a representação da parte baixa do registrador (R2) nos 32 leds. 
+- `push button 1` key1 da interface liga a representação da parte alta do registrador (R3) nos 32 leds.
+
+> Não é recomendado pressionar os dois ao mesmo tempo, mas se você insitir, talvez mostre a ultima sobreposição, que é a parte a\lta
 
