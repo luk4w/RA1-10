@@ -8,6 +8,7 @@
 #include "cli_controller.hpp"
 #include "fsm_scanner.hpp"
 #include "rpn_evaluator.hpp"
+#include "armv7_generator.hpp"
 
 using namespace std;
 
@@ -56,8 +57,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    testarParseExpressao();
-    exibirResultados();
+    // testarParseExpressao();
+    // exibirResultados();
+    string output;
+    gerarAssembly(tokens_linha, output);
+    cout << "Assembly:\n" << output;
 
     return 0;
 }
